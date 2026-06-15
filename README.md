@@ -94,6 +94,20 @@ Then open http://localhost:5173 in your browser.
 | `GET /api/activities` | Last 10 activities |
 | `GET /api/recommendations` | Rule-based training recommendations from readiness / HRV / body battery |
 
+## GitHub Pages
+
+The static frontend (`index.html`, `src/`, `config/`) is automatically deployed to GitHub Pages on every push to `main` via the `.github/workflows/pages.yml` workflow.
+
+Because the bridge server runs on your local machine, the deployed page will show "Bridge not connected" by default. To connect it:
+
+1. Start your local bridge: `npm run bridge`
+2. Open the deployed app in your browser
+3. Click the **⚙ Bridge** button in the header
+4. Enter the URL where your bridge is reachable (e.g. `http://192.168.1.x:3333` if on the same Wi-Fi, or a tunnel URL such as one created with `ngrok http 3333`)
+5. Click **Save & Reload** — the setting is stored in `localStorage` and persists across sessions
+
+> The server directory, `.env`, and `node_modules` are never included in the Pages deployment.
+
 ## Notes
 
 - The MCP process is restarted automatically if it crashes.

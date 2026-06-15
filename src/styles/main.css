@@ -243,3 +243,181 @@ h1 {
     grid-template-columns: 1fr;
   }
 }
+
+/* ── panel-wide ─────────────────────────────────────────────────────────── */
+.panel-wide {
+  grid-column: 1 / -1;
+}
+
+.section-sub {
+  margin: -0.4rem 0 0.8rem;
+  font-size: 0.84rem;
+  color: var(--ink-soft);
+  font-family: "IBM Plex Mono", monospace;
+}
+
+/* ── Racing Profile ──────────────────────────────────────────────────────── */
+.pb-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 0.8rem;
+}
+
+.pb-card {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 0.8rem;
+  background: rgba(255,255,255,0.35);
+}
+
+.pb-distance {
+  margin: 0 0 0.5rem;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.pb-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.25rem;
+}
+
+.pb-label {
+  font-size: 0.75rem;
+  color: var(--ink-soft);
+}
+
+.pb-val {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.pb-val.accent { color: var(--accent); }
+
+.pb-note {
+  margin: 0.5rem 0 0;
+  font-size: 0.72rem;
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* ── Training Week ───────────────────────────────────────────────────────── */
+.week-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0.7rem;
+}
+
+.day-card {
+  border-radius: 12px;
+  padding: 0.8rem;
+  border: 1px solid var(--line);
+  background: rgba(255,255,255,0.3);
+}
+
+.day-card.day-quality { border-color: var(--accent); }
+.day-card.day-long { border-color: #4f6d7a; }
+.day-card.day-rest { opacity: 0.7; }
+
+.day-name {
+  margin: 0 0 0.3rem;
+  font-size: 0.72rem;
+  color: var(--ink-soft);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.day-label {
+  margin: 0 0 0.3rem;
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.day-desc {
+  margin: 0 0 0.5rem;
+  font-size: 0.78rem;
+  color: var(--ink-soft);
+  line-height: 1.4;
+}
+
+.day-meta {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.day-duration, .day-zone {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.7rem;
+  background: rgba(31,42,45,0.07);
+  padding: 0.15rem 0.4rem;
+  border-radius: 6px;
+}
+
+/* ── Modal ──────────────────────────────────────────────────────────────── */
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(31,42,45,0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.modal.hidden { display: none; }
+
+.modal-box {
+  background: #fff;
+  border-radius: 16px;
+  padding: 1.6rem;
+  width: min(420px, 90vw);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+}
+
+.modal-box h3 { margin: 0 0 0.4rem; }
+
+.modal-hint {
+  font-size: 0.82rem;
+  color: var(--ink-soft);
+  margin: 0 0 0.8rem;
+}
+
+.modal-box input[type="url"] {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0.6rem 0.7rem;
+  font: inherit;
+  font-size: 0.9rem;
+  margin-bottom: 0.8rem;
+  box-sizing: border-box;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+.modal-actions button {
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  padding: 0.5rem 1rem;
+  font: inherit;
+  cursor: pointer;
+}
+
+.modal-actions button:first-child {
+  background: var(--ink);
+  color: #fff;
+  border-color: var(--ink);
+}
+
+.badge-btn {
+  cursor: pointer;
+  background: none;
+  border: 1px solid var(--line);
+}

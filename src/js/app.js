@@ -1,4 +1,14 @@
-import { checkBridge, getHealthSummary, getLastActivity, getRecommendations } from './garmin-client.js';
+import {
+  checkBridge,
+  getHealthSummary,
+  getLastActivity,
+  getRecommendations,
+  getRacePredictions,
+  getPersonalRecords,
+  getTrainingWeek,
+  getBridgeUrl,
+  setBridgeUrl
+} from './garmin-client.js';
 
 // ─── DOM refs ─────────────────────────────────────────────────────────────────
 const healthGrid = document.getElementById('healthGrid');
@@ -8,6 +18,14 @@ const connectionStatus = document.getElementById('connectionStatus');
 const lastSync = document.getElementById('lastSync');
 const goalForm = document.getElementById('goalForm');
 const goalList = document.getElementById('goalList');
+const pbGrid = document.getElementById('pbGrid');
+const weekGrid = document.getElementById('weekGrid');
+const trainingGoalLine = document.getElementById('trainingGoalLine');
+const bridgeSettingsBtn = document.getElementById('bridgeSettingsBtn');
+const settingsModal = document.getElementById('settingsModal');
+const bridgeUrlInput = document.getElementById('bridgeUrlInput');
+const saveBridgeBtn = document.getElementById('saveBridgeBtn');
+const cancelBridgeBtn = document.getElementById('cancelBridgeBtn');
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 function kpiCard(label, value) {
@@ -73,6 +91,95 @@ function setConnectionBadge(connected) {
   connectionStatus.style.color = connected ? '#1f8f68' : '#ef7d57';
 }
 
+// ─── Racing Profile renderer ───────────────────────────────────────────────────
+function renderRacingProfile(pbs, predictions) {
+  const distances = [
+    { key: '1km',  label: '1 km',   pbKey: 'fastest1k',            predKey: null },
+    { key: '1mi',  label: '1 Mile', pbKey: 'fastest1mi',           predKey: null },
+    { key: '5k',   label: '5K',     pbKey: 'fastest5k',            predKey: '5k' },
+    { key: '10k',  label: '10K',    pbKey: 'fastest10k',           predKey: '10k' },
+    { key: 'hm',   label: 'HM',     pbKey: 'fastestHalfMarathon',  predKey: 'halfMarathon' },
+    { key: 'mar',  label: 'Marathon', pbKey: null,                 predKey: 'marathon' }
+  ];
+
+  const cards = distances.map(({ label, pbKey, predKey }) => {
+    const pb = pbKey ? pbs[pbKey] : null;
+    const pred = predKey ? predictions[predKey] : null;
+
+    const pbFormatted   = pb   ? pb.formatted   : '—';
+    const predFormatted = pred ? pred.formatted  : '—';
+
+    // "On track to PB" if prediction is strictly faster than recorded PB
+    let note = '';
+    if (pb && pred && pred.seconds < pb.seconds) {
+      note = `<p class="pb-note">&#8593; On track to PB</p>`;
+    }
+
+    return `
+      <article class="pb-card">
+        <p class="pb-distance">${label}</p>
+        <div class="pb-row">
+          <span class="pb-label">PB</span><span class="pb-val mono">${pbFormatted}</span>
+        </div>
+        <div class="pb-row">
+          <span class="pb-label">Predicted</span><span class="pb-val mono accent">${predFormatted}</span>
+        </div>
+        ${note}
+      </article>
+    `;
+  });
+
+  pbGrid.innerHTML = cards.join('');
+}
+
+// ─── Training Week renderer ───────────────────────────────────────────────────
+function renderTrainingWeek(plan) {
+  if (!plan || !Array.isArray(plan.weekPlan)) return;
+
+  trainingGoalLine.textContent = `Target: ${plan.targetTime} · Current prediction: ${plan.currentPrediction}`;
+
+  const cards = plan.weekPlan.map(({ day, type, label, description, duration, zone }) => {
+    const zoneText = zone || '—';
+    return `
+      <article class="day-card day-${type}">
+        <p class="day-name">${day}</p>
+        <p class="day-label">${label}</p>
+        <p class="day-desc">${description}</p>
+        <div class="day-meta">
+          <span class="day-duration">${duration}</span>
+          <span class="day-zone">${zoneText}</span>
+        </div>
+      </article>
+    `;
+  });
+
+  weekGrid.innerHTML = cards.join('');
+}
+
+// ─── Bridge settings modal ────────────────────────────────────────────────────
+bridgeSettingsBtn.addEventListener('click', () => {
+  bridgeUrlInput.value = getBridgeUrl();
+  settingsModal.classList.remove('hidden');
+});
+
+saveBridgeBtn.addEventListener('click', () => {
+  const url = bridgeUrlInput.value.trim();
+  if (url) {
+    setBridgeUrl(url);
+    window.location.reload();
+  }
+});
+
+cancelBridgeBtn.addEventListener('click', () => {
+  settingsModal.classList.add('hidden');
+});
+
+settingsModal.addEventListener('click', (e) => {
+  if (e.target === settingsModal) {
+    settingsModal.classList.add('hidden');
+  }
+});
+
 // ─── Goal form ────────────────────────────────────────────────────────────────
 function renderGoal(goal) {
   const li = document.createElement('li');
@@ -97,16 +204,33 @@ goalForm.addEventListener('submit', (event) => {
 
 // ─── Boot ─────────────────────────────────────────────────────────────────────
 async function boot() {
+  // 0. Load app config to get bridge URL fallback (if not already in localStorage)
+  if (!localStorage.getItem('bridgeUrl')) {
+    try {
+      const cfg = await fetch('./config/app.config.json').then((r) => r.json());
+      if (cfg.bridgeUrl && cfg.bridgeUrl !== 'http://localhost:3333') {
+        // Only apply non-default values from config so localhost default still works
+        localStorage.setItem('bridgeUrl', cfg.bridgeUrl);
+      }
+    } catch {
+      // config not available — harmless, BRIDGE constant already has the default
+    }
+  }
+
   // 1. Check bridge connectivity
   const connected = await checkBridge().catch(() => false);
   setConnectionBadge(connected);
 
   // 2. Fetch all data in parallel, never crashing if individual calls fail
-  const [healthResult, activityResult, recsResult] = await Promise.allSettled([
-    getHealthSummary(),
-    getLastActivity(),
-    getRecommendations()
-  ]);
+  const [healthResult, activityResult, recsResult, predsResult, pbsResult, weekResult] =
+    await Promise.allSettled([
+      getHealthSummary(),
+      getLastActivity(),
+      getRecommendations(),
+      getRacePredictions(),
+      getPersonalRecords(),
+      getTrainingWeek('half_marathon')
+    ]);
 
   const health = healthResult.status === 'fulfilled'
     ? healthResult.value
@@ -120,10 +244,16 @@ async function boot() {
     ? recsResult.value
     : ['Start the Garmin bridge to load personalised recommendations.'];
 
+  const predictions = predsResult.status === 'fulfilled' ? predsResult.value : {};
+  const pbs         = pbsResult.status   === 'fulfilled' ? pbsResult.value   : {};
+  const weekPlan    = weekResult.status  === 'fulfilled' ? weekResult.value   : null;
+
   // 3. Render
   renderHealthGrid(health);
   renderActivityKpis(activity);
   renderRecommendations(recs);
+  renderRacingProfile(pbs, predictions);
+  if (weekPlan) renderTrainingWeek(weekPlan);
 
   lastSync.textContent = `Last sync: ${new Date().toLocaleTimeString()}`;
 }

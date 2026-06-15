@@ -299,6 +299,142 @@ app.get('/api/recommendations', async (_req, res) => {
   }
 });
 
+// ── Race Predictions ──────────────────────────────────────────────────────────
+function formatSeconds(s) {
+  s = Math.round(s);
+  const h = Math.floor(s / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  const sec = s % 60;
+  const mm = String(m).padStart(2, '0');
+  const ss = String(sec).padStart(2, '0');
+  if (h > 0) {
+    return `${h}:${mm}:${ss}`;
+  }
+  return `${m}:${ss}`;
+}
+
+app.get('/api/race-predictions', async (_req, res) => {
+  try {
+    const data = await mcp.tool('get_race_predictions', {});
+    if (!data) return res.status(502).json({ error: 'No data from MCP' });
+
+    // MCP returns times in seconds; field names may vary — try common shapes
+    const raw5k   = data['5k']   ?? data['5K']   ?? data.fiveK   ?? data.race5K   ?? null;
+    const raw10k  = data['10k']  ?? data['10K']  ?? data.tenK    ?? data.race10K  ?? null;
+    const rawHM   = data['halfMarathon'] ?? data['half_marathon'] ?? data.halfMarathon ?? data.raceHalfMarathon ?? null;
+    const rawFull = data['marathon']     ?? data['full_marathon'] ?? data.marathon     ?? data.raceMarathon     ?? null;
+
+    res.json({
+      '5k':           { seconds: Math.round(raw5k   ?? 1168), formatted: formatSeconds(raw5k   ?? 1168) },
+      '10k':          { seconds: Math.round(raw10k  ?? 2429), formatted: formatSeconds(raw10k  ?? 2429) },
+      halfMarathon:   { seconds: Math.round(rawHM   ?? 5688), formatted: formatSeconds(rawHM   ?? 5688) },
+      marathon:       { seconds: Math.round(rawFull ?? 12771), formatted: formatSeconds(rawFull ?? 12771) }
+    });
+  } catch (err) {
+    console.error('[/api/race-predictions]', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ── Personal Records ───────────────────────────────────────────────────────────
+const TYPE_ID_MAP = {
+  1: 'fastest1k',
+  2: 'fastest1mi',
+  3: 'fastest5k',
+  4: 'fastest10k',
+  5: 'fastestHalfMarathon',
+  7: 'longestRunMeters'
+};
+
+app.get('/api/personal-records', async (_req, res) => {
+  try {
+    const data = await mcp.tool('get_personal_records', {});
+    const records = Array.isArray(data) ? data : (data?.personalRecords ?? data?.records ?? []);
+
+    const result = {};
+
+    for (const rec of records) {
+      const typeId = rec.typeId ?? rec.type_id;
+      const key = TYPE_ID_MAP[typeId];
+      if (!key) continue;
+
+      const value = rec.value ?? rec.personalRecordValue ?? rec.recordValue ?? 0;
+      const actName = rec.activityName ?? rec.activity_name ?? rec.actStartDateTimeInGMTFormatted ?? '';
+      const rawDate = rec.actStartDateTimeInGMTFormatted ?? rec.date ?? rec.actStartDateTimeLocalFormatted ?? '';
+      const date = typeof rawDate === 'string' ? rawDate.slice(0, 10) : '';
+
+      if (key === 'longestRunMeters') {
+        result.longestRunKm = Math.round(value / 100) / 10;
+      } else {
+        const secs = Math.round(value);
+        result[key] = {
+          seconds: secs,
+          formatted: formatSeconds(secs),
+          activity: actName,
+          date
+        };
+      }
+    }
+
+    res.json(result);
+  } catch (err) {
+    console.error('[/api/personal-records]', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ── Training Week ─────────────────────────────────────────────────────────────
+const TRAINING_PLANS = {
+  half_marathon: {
+    goal: 'half_marathon',
+    targetTime: '1:28:00',
+    currentPrediction: '1:34:48',
+    weekPlan: [
+      { day: 'Monday',   type: 'rest',     label: 'Rest / Mobility',    description: 'Full rest or 20min mobility work',                             duration: '20 min',   zone: null },
+      { day: 'Tuesday',  type: 'quality',  label: 'Tempo Run',          description: '2km warm-up + 5×1km at 4:45/km + 1km cool-down',             duration: '55 min',   zone: 'Z3-Z4' },
+      { day: 'Wednesday',type: 'easy',     label: 'Easy Run',           description: '8km at conversational pace (5:30–6:00/km)',                   duration: '45 min',   zone: 'Z2' },
+      { day: 'Thursday', type: 'strength', label: 'Strength + Drills',  description: '30min lower body strength + 15min running drills',           duration: '45 min',   zone: null },
+      { day: 'Friday',   type: 'rest',     label: 'Rest',               description: 'Complete rest. Focus on hydration and sleep.',                duration: '—',        zone: null },
+      { day: 'Saturday', type: 'quality',  label: 'Interval Session',   description: '6×800m at 4:30/km with 90s recovery jog',                    duration: '50 min',   zone: 'Z4-Z5' },
+      { day: 'Sunday',   type: 'long',     label: 'Long Run',           description: '18km at easy pace (5:30–5:50/km). Build to race distance.',  duration: '1h 45min', zone: 'Z2' }
+    ]
+  },
+  marathon: {
+    goal: 'marathon',
+    targetTime: '3:20:00',
+    currentPrediction: '3:32:51',
+    weekPlan: [
+      { day: 'Monday',   type: 'rest',     label: 'Rest / Mobility',    description: 'Full rest or 20min mobility work',                              duration: '20 min',   zone: null },
+      { day: 'Tuesday',  type: 'quality',  label: 'Marathon Pace Run',  description: '2km warm-up + 10km at 4:45/km + 2km cool-down',               duration: '1h 10min', zone: 'Z3' },
+      { day: 'Wednesday',type: 'easy',     label: 'Easy Run',           description: '10km at conversational pace (5:30–6:00/km)',                   duration: '55 min',   zone: 'Z2' },
+      { day: 'Thursday', type: 'strength', label: 'Strength + Drills',  description: '30min lower body strength + 15min running drills',            duration: '45 min',   zone: null },
+      { day: 'Friday',   type: 'rest',     label: 'Rest',               description: 'Complete rest. Focus on hydration and sleep.',                 duration: '—',        zone: null },
+      { day: 'Saturday', type: 'quality',  label: 'Interval Session',   description: '8×800m at 4:20/km with 90s recovery jog',                     duration: '60 min',   zone: 'Z4-Z5' },
+      { day: 'Sunday',   type: 'long',     label: 'Long Run',           description: '28km at easy pace (5:30–5:50/km). Build to race distance.',   duration: '2h 35min', zone: 'Z2' }
+    ]
+  },
+  '5k': {
+    goal: '5k',
+    targetTime: '18:30',
+    currentPrediction: '19:28',
+    weekPlan: [
+      { day: 'Monday',   type: 'rest',     label: 'Rest / Mobility',   description: 'Full rest or 20min mobility work',                             duration: '20 min', zone: null },
+      { day: 'Tuesday',  type: 'quality',  label: 'Speed Work',        description: '10×400m at 4:00/km pace with 60s full recovery',              duration: '45 min', zone: 'Z5' },
+      { day: 'Wednesday',type: 'easy',     label: 'Easy Run',          description: '6km at conversational pace (5:30–6:00/km)',                   duration: '35 min', zone: 'Z2' },
+      { day: 'Thursday', type: 'strength', label: 'Strength + Drills', description: '30min lower body strength + 15min running drills',           duration: '45 min', zone: null },
+      { day: 'Friday',   type: 'rest',     label: 'Rest',              description: 'Complete rest. Focus on hydration and sleep.',                duration: '—',      zone: null },
+      { day: 'Saturday', type: 'quality',  label: 'Tempo Run',         description: '1km warm-up + 3km at 4:10/km + 1km cool-down',               duration: '30 min', zone: 'Z4' },
+      { day: 'Sunday',   type: 'long',     label: 'Easy Long Run',     description: '12km at easy pace (5:30–6:00/km).',                          duration: '1h 10min', zone: 'Z2' }
+    ]
+  }
+};
+
+app.get('/api/training-week', (req, res) => {
+  const goal = req.query.goal || 'half_marathon';
+  const plan = TRAINING_PLANS[goal] ?? TRAINING_PLANS['half_marathon'];
+  res.json(plan);
+});
+
 // ─── Start ────────────────────────────────────────────────────────────────────
 async function main() {
   mcp.spawn();
