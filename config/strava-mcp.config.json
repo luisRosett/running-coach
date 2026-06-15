@@ -1,0 +1,52 @@
+{
+  "serverName": "strava-mcp",
+  "transport": "http",
+  "serverUrl": "https://mcp.strava.com/mcp",
+  "setupCommand": "claude mcp add --transport http strava-mcp https://mcp.strava.com/mcp",
+  "requiredEnv": [
+    "STRAVA_CLIENT_ID",
+    "STRAVA_CLIENT_SECRET",
+    "STRAVA_REFRESH_TOKEN",
+    "STRAVA_REDIRECT_URI"
+  ],
+  "stravaOAuth": {
+    "authorizeUrl": "https://www.strava.com/oauth/authorize",
+    "tokenUrl": "https://www.strava.com/oauth/token",
+    "clientIdEnv": "STRAVA_CLIENT_ID",
+    "clientSecretEnv": "STRAVA_CLIENT_SECRET",
+    "refreshTokenEnv": "STRAVA_REFRESH_TOKEN",
+    "redirectUriEnv": "STRAVA_REDIRECT_URI",
+    "scopes": [
+      "read",
+      "activity:read_all",
+      "profile:read_all"
+    ],
+    "tokenRefreshPolicy": {
+      "enabled": true,
+      "refreshBeforeExpirySeconds": 300
+    }
+  },
+  "localBridge": {
+    "enabled": true,
+    "endpoint": "http://localhost:3333/strava",
+    "authMode": "oauth-refresh-token",
+    "healthEndpoint": "/health",
+    "notes": "Bridge should resolve env vars, refresh access tokens, and call Strava MCP safely server-side."
+  },
+  "mcpDataRequests": {
+    "summary": "/api/strava/summary",
+    "activities": "/api/strava/activities",
+    "recommendations": "/api/strava/recommendations"
+  },
+  "dashboardMapping": {
+    "weeklyDistanceKm": "summary.weeklyDistanceKm",
+    "weeklyTimeHours": "summary.weeklyMovingTimeHours",
+    "weeklyElevation": "summary.weeklyElevationM",
+    "weeklyActivities": "summary.weeklyActivitiesCount",
+    "lastActivityDate": "summary.lastActivityDate"
+  },
+  "liveData": {
+    "enabled": true,
+    "fallbackToMock": false
+  }
+}

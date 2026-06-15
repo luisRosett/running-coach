@@ -1,0 +1,245 @@
+:root {
+  --bg-0: #f1f5f0;
+  --bg-1: #dce9db;
+  --ink: #1f2a2d;
+  --ink-soft: #4c5b61;
+  --panel: rgba(255, 255, 255, 0.72);
+  --line: rgba(31, 42, 45, 0.1);
+  --accent: #1f8f68;
+  --accent-2: #ef7d57;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Space Grotesk", sans-serif;
+  color: var(--ink);
+  background: linear-gradient(140deg, var(--bg-0), var(--bg-1));
+  min-height: 100vh;
+}
+
+.page-bg {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image: radial-gradient(circle at 20% 20%, rgba(239, 125, 87, 0.18), transparent 45%),
+    radial-gradient(circle at 80% 30%, rgba(31, 143, 104, 0.2), transparent 40%),
+    radial-gradient(circle at 60% 80%, rgba(31, 42, 45, 0.08), transparent 45%);
+}
+
+.hero,
+.layout {
+  position: relative;
+  z-index: 1;
+}
+
+.hero {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 3.2rem 1.2rem 1.4rem;
+}
+
+.hero-kicker {
+  margin: 0;
+  letter-spacing: 0.12em;
+  font-size: 0.72rem;
+  color: var(--ink-soft);
+}
+
+h1 {
+  margin: 0.4rem 0 0.5rem;
+  font-size: clamp(2rem, 4vw, 3rem);
+}
+
+.hero-subtitle {
+  margin: 0;
+  max-width: 72ch;
+  color: var(--ink-soft);
+}
+
+.hero-meta {
+  display: flex;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
+
+.badge,
+.mono {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.78rem;
+  padding: 0.28rem 0.54rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.55);
+}
+
+.layout {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 1.2rem 2.4rem;
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 1rem;
+  backdrop-filter: blur(8px);
+  animation: rise-in 500ms ease;
+}
+
+.panel h2 {
+  margin-top: 0;
+  font-size: 1.02rem;
+}
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(120px, 1fr));
+  gap: 0.8rem;
+}
+
+.kpi {
+  border: 1px dashed var(--line);
+  border-radius: 12px;
+  padding: 0.7rem;
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.kpi-label {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 0.82rem;
+}
+
+.kpi-value {
+  margin: 0.15rem 0 0;
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+.diagram-grid {
+  display: grid;
+  gap: 0.8rem;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.diagram-card {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 0.8rem;
+  background: rgba(255, 255, 255, 0.35);
+}
+
+.diagram-card h3 {
+  margin: 0 0 0.6rem;
+  font-size: 0.95rem;
+}
+
+.diagram-svg {
+  width: 100%;
+  height: auto;
+}
+
+.diagram-svg rect {
+  fill: var(--accent);
+  opacity: 0.85;
+}
+
+.donut-bg {
+  fill: none;
+  stroke: rgba(31, 42, 45, 0.15);
+  stroke-width: 30;
+}
+
+.donut-segment {
+  fill: none;
+  stroke-width: 30;
+  transform: rotate(-90deg);
+  transform-origin: center;
+  stroke-linecap: butt;
+}
+
+.z1 {
+  stroke: var(--accent);
+  stroke-dasharray: 130 310;
+}
+
+.z2 {
+  stroke: var(--accent-2);
+  stroke-dasharray: 85 355;
+  stroke-dashoffset: -130;
+}
+
+.z3 {
+  stroke: #4f6d7a;
+  stroke-dasharray: 95 345;
+  stroke-dashoffset: -215;
+}
+
+.donut-hole {
+  fill: rgba(255, 255, 255, 0.85);
+}
+
+.recommendation-list,
+.goal-list {
+  margin: 0;
+  padding-left: 1.1rem;
+  display: grid;
+  gap: 0.4rem;
+}
+
+.goal-form {
+  display: grid;
+  gap: 0.65rem;
+  margin-bottom: 0.8rem;
+}
+
+.goal-form label {
+  display: grid;
+  gap: 0.3rem;
+  font-size: 0.88rem;
+  color: var(--ink-soft);
+}
+
+.goal-form input,
+.goal-form button {
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  padding: 0.58rem 0.62rem;
+  font: inherit;
+}
+
+.goal-form button {
+  background: var(--ink);
+  color: #fff;
+  cursor: pointer;
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 680px) {
+  .hero {
+    padding-top: 2.1rem;
+  }
+
+  .layout {
+    grid-template-columns: 1fr;
+  }
+}

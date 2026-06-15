@@ -1,0 +1,42 @@
+{
+  "serverName": "garmin-connect",
+  "transport": "stdio",
+  "package": "@nicolasvegam/garmin-connect-mcp",
+  "setupCommand": "claude mcp add garmin-connect -e GARMIN_EMAIL=<email> -e GARMIN_PASSWORD=<password> -- npx -y @nicolasvegam/garmin-connect-mcp",
+  "requiredEnv": [
+    "GARMIN_EMAIL",
+    "GARMIN_PASSWORD"
+  ],
+  "auth": {
+    "type": "credentials",
+    "tokenCache": "~/.garmin-mcp/",
+    "notes": "OAuth tokens are cached locally after first login to avoid re-authentication on each request."
+  },
+  "toolCategories": {
+    "activities": [
+      "get_activities", "get_activity_details", "get_activity_splits",
+      "get_activity_weather", "get_activity_hr_zones", "get_activity_power_zones"
+    ],
+    "dailyHealth": [
+      "get_steps", "get_heart_rate", "get_stress", "get_body_battery",
+      "get_respiration", "get_spo2", "get_intensity_minutes", "get_floors"
+    ],
+    "sleep": [
+      "get_sleep_data", "get_sleep_score", "get_hrv_data"
+    ],
+    "bodyComposition": [
+      "get_weight", "get_bmi", "get_body_fat", "get_muscle_mass", "get_hydration"
+    ],
+    "performance": [
+      "get_vo2max", "get_training_status", "get_training_load",
+      "get_fitness_age", "get_race_predictions", "get_power_curve"
+    ],
+    "trends": [
+      "get_weekly_summary", "get_monthly_summary", "get_personal_records"
+    ],
+    "profile": [
+      "get_user_profile", "get_devices", "get_gear"
+    ]
+  },
+  "totalTools": 61
+}

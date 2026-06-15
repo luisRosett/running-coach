@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Personal Trainer Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./src/styles/main.css" />
+  </head>
+  <body>
+    <div class="page-bg"></div>
+
+    <header class="hero">
+      <p class="hero-kicker">GARMIN CONNECT · AI COACH</p>
+      <h1>Running Coach</h1>
+      <p class="hero-subtitle">
+        Your personal training dashboard powered by Garmin Connect data.
+      </p>
+      <div class="hero-meta">
+        <span id="connectionStatus" class="badge">Checking bridge...</span>
+        <span id="lastSync" class="mono">Last sync: -</span>
+      </div>
+    </header>
+
+    <main class="layout">
+      <section class="panel" aria-labelledby="healthTitle">
+        <h2 id="healthTitle">Today's Health</h2>
+        <div id="healthGrid" class="kpi-grid"></div>
+      </section>
+
+      <section class="panel" aria-labelledby="kpiTitle">
+        <h2 id="kpiTitle">Last Activity</h2>
+        <div id="kpis" class="kpi-grid"></div>
+      </section>
+
+      <section class="panel" aria-labelledby="diagramTitle">
+        <h2 id="diagramTitle">Initial Diagrams</h2>
+        <div class="diagram-grid">
+          <article class="diagram-card">
+            <h3>Weekly Load</h3>
+            <svg viewBox="0 0 320 120" class="diagram-svg" role="img" aria-label="Weekly load bars">
+              <rect x="20" y="70" width="28" height="40"></rect>
+              <rect x="65" y="50" width="28" height="60"></rect>
+              <rect x="110" y="80" width="28" height="30"></rect>
+              <rect x="155" y="35" width="28" height="75"></rect>
+              <rect x="200" y="25" width="28" height="85"></rect>
+              <rect x="245" y="65" width="28" height="45"></rect>
+            </svg>
+          </article>
+
+          <article class="diagram-card">
+            <h3>Intensity Distribution</h3>
+            <svg viewBox="0 0 220 220" class="diagram-svg" role="img" aria-label="Intensity donut chart">
+              <circle cx="110" cy="110" r="70" class="donut-bg"></circle>
+              <circle cx="110" cy="110" r="70" class="donut-segment z1"></circle>
+              <circle cx="110" cy="110" r="70" class="donut-segment z2"></circle>
+              <circle cx="110" cy="110" r="70" class="donut-segment z3"></circle>
+              <circle cx="110" cy="110" r="40" class="donut-hole"></circle>
+            </svg>
+          </article>
+        </div>
+      </section>
+
+      <section class="panel" aria-labelledby="recommendationsTitle">
+        <h2 id="recommendationsTitle">Training Recommendations</h2>
+        <ul id="recommendations" class="recommendation-list"></ul>
+      </section>
+
+      <section class="panel" aria-labelledby="goalsTitle">
+        <h2 id="goalsTitle">Yearly Goals</h2>
+        <form id="goalForm" class="goal-form">
+          <label>
+            Goal name
+            <input id="goalName" name="goalName" type="text" placeholder="e.g. Marathon sub 3:45" required />
+          </label>
+          <label>
+            Target value
+            <input id="goalTarget" name="goalTarget" type="text" placeholder="e.g. 3h 45m" required />
+          </label>
+          <label>
+            Deadline
+            <input id="goalDeadline" name="goalDeadline" type="date" required />
+          </label>
+          <button type="submit">Add Goal</button>
+        </form>
+        <ul id="goalList" class="goal-list"></ul>
+      </section>
+    </main>
+
+    <script type="module" src="./src/js/app.js"></script>
+
+  </body>
+</html>
