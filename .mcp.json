@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "fsbrain-vault": {
+      "command": "podman",
+      "args": [
+        "exec", "-i",
+        "-e", "MCP_ACTOR=agent:claude-code",
+        "bold_williams",
+        "node",
+        "/opt/file-system/file-system-like-github/apps/mcp/dist/server.js"
+      ]
+    }
+  }
+}

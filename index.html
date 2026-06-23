@@ -16,74 +16,63 @@
     <div class="page-bg"></div>
 
     <header class="hero">
-      <p class="hero-kicker">GARMIN CONNECT · AI COACH</p>
+      <p class="hero-kicker">GARMIN CONNECT · AI COACH · FSBRAIN VAULT</p>
       <h1>Running Coach</h1>
       <p class="hero-subtitle">
-        Your personal training dashboard powered by Garmin Connect data.
+        Personal training dashboard powered by live Garmin Connect data and a local AI coach.
       </p>
       <div class="hero-meta">
-        <span id="connectionStatus" class="badge">Checking bridge...</span>
+        <span id="connectionStatus" class="badge">Checking bridge…</span>
         <span id="lastSync" class="mono">Last sync: -</span>
+        <span id="recoveryBadge" class="badge recovery-badge hidden"></span>
+        <button id="syncBtn" class="badge badge-btn" title="Sync Garmin data now">↻ Sync</button>
+        <a href="http://localhost:5173" target="_blank" class="badge badge-btn" title="Open fsbrain vault UI">⬡ Vault</a>
         <button id="bridgeSettingsBtn" class="badge badge-btn" title="Configure bridge URL">⚙ Bridge</button>
       </div>
     </header>
 
     <main class="layout">
-      <section class="panel" aria-labelledby="healthTitle">
+
+      <!-- Row 1: Today's Health | Last Activity | Recommendations -->
+      <section class="panel col-4" aria-labelledby="healthTitle">
         <h2 id="healthTitle">Today's Health</h2>
         <div id="healthGrid" class="kpi-grid"></div>
       </section>
 
-      <section class="panel" aria-labelledby="kpiTitle">
+      <section class="panel col-4" aria-labelledby="kpiTitle">
         <h2 id="kpiTitle">Last Activity</h2>
         <div id="kpis" class="kpi-grid"></div>
       </section>
 
-      <section class="panel" aria-labelledby="diagramTitle">
-        <h2 id="diagramTitle">Initial Diagrams</h2>
-        <div class="diagram-grid">
-          <article class="diagram-card">
-            <h3>Weekly Load</h3>
-            <svg viewBox="0 0 320 120" class="diagram-svg" role="img" aria-label="Weekly load bars">
-              <rect x="20" y="70" width="28" height="40"></rect>
-              <rect x="65" y="50" width="28" height="60"></rect>
-              <rect x="110" y="80" width="28" height="30"></rect>
-              <rect x="155" y="35" width="28" height="75"></rect>
-              <rect x="200" y="25" width="28" height="85"></rect>
-              <rect x="245" y="65" width="28" height="45"></rect>
-            </svg>
-          </article>
-
-          <article class="diagram-card">
-            <h3>Intensity Distribution</h3>
-            <svg viewBox="0 0 220 220" class="diagram-svg" role="img" aria-label="Intensity donut chart">
-              <circle cx="110" cy="110" r="70" class="donut-bg"></circle>
-              <circle cx="110" cy="110" r="70" class="donut-segment z1"></circle>
-              <circle cx="110" cy="110" r="70" class="donut-segment z2"></circle>
-              <circle cx="110" cy="110" r="70" class="donut-segment z3"></circle>
-              <circle cx="110" cy="110" r="40" class="donut-hole"></circle>
-            </svg>
-          </article>
-        </div>
-      </section>
-
-      <section class="panel" aria-labelledby="recommendationsTitle">
+      <section class="panel col-4" aria-labelledby="recommendationsTitle">
         <h2 id="recommendationsTitle">Training Recommendations</h2>
         <ul id="recommendations" class="recommendation-list"></ul>
       </section>
 
-      <section class="panel panel-wide" id="racingProfile" aria-labelledby="racingTitle">
+      <!-- Row 2: Racing Profile (full width) -->
+      <section class="panel col-12" id="racingProfile" aria-labelledby="racingTitle">
         <h2 id="racingTitle">Racing Profile</h2>
         <div class="pb-grid" id="pbGrid"></div>
       </section>
 
-      <section class="panel panel-wide" id="trainingWeekPanel" aria-labelledby="trainingWeekTitle">
+      <!-- Row 3: Training Week (full width) -->
+      <section class="panel col-12" id="trainingWeekPanel" aria-labelledby="trainingWeekTitle">
         <h2 id="trainingWeekTitle">Recommended Training Week</h2>
         <p class="section-sub" id="trainingGoalLine"></p>
         <div class="week-grid" id="weekGrid"></div>
       </section>
 
-      <section class="panel" aria-labelledby="goalsTitle">
+      <!-- Row 4: AI Coach (8 cols) + Yearly Goals (4 cols) -->
+      <section class="panel col-8" id="coachChatPanel" aria-labelledby="chatTitle">
+        <h2 id="chatTitle">AI Coach <span class="badge-model">llama3.2:3b · local</span></h2>
+        <div id="chatMessages" class="chat-messages" aria-live="polite"></div>
+        <form id="chatForm" class="chat-form">
+          <input id="chatInput" type="text" placeholder="Ask your coach anything…" autocomplete="off" />
+          <button type="submit" id="chatSendBtn">Send</button>
+        </form>
+      </section>
+
+      <section class="panel col-4" aria-labelledby="goalsTitle">
         <h2 id="goalsTitle">Yearly Goals</h2>
         <form id="goalForm" class="goal-form">
           <label>
@@ -91,8 +80,8 @@
             <input id="goalName" name="goalName" type="text" placeholder="e.g. Marathon sub 3:45" required />
           </label>
           <label>
-            Target value
-            <input id="goalTarget" name="goalTarget" type="text" placeholder="e.g. 3h 45m" required />
+            Target
+            <input id="goalTarget" name="goalTarget" type="text" placeholder="e.g. 3:45:00" required />
           </label>
           <label>
             Deadline
@@ -102,6 +91,7 @@
         </form>
         <ul id="goalList" class="goal-list"></ul>
       </section>
+
     </main>
 
     <script type="module" src="./src/js/app.js"></script>

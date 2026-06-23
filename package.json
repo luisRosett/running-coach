@@ -5,12 +5,13 @@
   "type": "commonjs",
   "scripts": {
     "bridge": "node server/garmin-bridge.js",
-    "serve": "python3 -m http.server 5173",
+    "serve": "python3 -m http.server 5174",
     "dev": "concurrently \"npm run bridge\" \"npm run serve\""
   },
   "dependencies": {
     "concurrently": "^8.2.2",
     "cors": "^2.8.5",
-    "express": "^4.19.2"
+    "express": "^4.19.2",
+    "node-cron": "^4.5.0"
   }
 }

@@ -37,9 +37,9 @@ body {
 }
 
 .hero {
-  max-width: 1080px;
+  max-width: 1400px;
   margin: 0 auto;
-  padding: 3.2rem 1.2rem 1.4rem;
+  padding: 3.2rem 2rem 1.4rem;
 }
 
 .hero-kicker {
@@ -78,31 +78,46 @@ h1 {
 }
 
 .layout {
-  max-width: 1080px;
+  max-width: 1400px;
   margin: 0 auto;
-  padding: 0 1.2rem 2.4rem;
+  padding: 0 2rem 3rem;
   display: grid;
-  gap: 1rem;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.2rem;
+  grid-template-columns: repeat(12, 1fr);
 }
 
 .panel {
   background: var(--panel);
   border: 1px solid var(--line);
   border-radius: 16px;
-  padding: 1rem;
+  padding: 1.4rem 1.6rem;
   backdrop-filter: blur(8px);
   animation: rise-in 500ms ease;
 }
 
 .panel h2 {
-  margin-top: 0;
-  font-size: 1.02rem;
+  margin: 0 0 1rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  padding-bottom: 0.65rem;
+  border-bottom: 1px solid var(--line);
 }
+
+/* Column spans */
+.col-4  { grid-column: span 4; }
+.col-6  { grid-column: span 6; }
+.col-8  { grid-column: span 8; }
+.col-12 { grid-column: span 12; }
+
+/* Legacy alias */
+.panel-wide { grid-column: 1 / -1; }
 
 .kpi-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(120px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: 0.8rem;
 }
 
@@ -121,8 +136,9 @@ h1 {
 
 .kpi-value {
   margin: 0.15rem 0 0;
-  font-size: 1.4rem;
+  font-size: 1.25rem;
   font-weight: 700;
+  font-family: "IBM Plex Mono", monospace;
 }
 
 .diagram-grid {
@@ -234,14 +250,13 @@ h1 {
   }
 }
 
-@media (max-width: 680px) {
-  .hero {
-    padding-top: 2.1rem;
-  }
-
+@media (max-width: 900px) {
+  .hero { padding: 2rem 1rem 1rem; }
   .layout {
     grid-template-columns: 1fr;
+    padding: 0 1rem 2rem;
   }
+  .col-4, .col-6, .col-8, .col-12 { grid-column: 1 / -1; }
 }
 
 /* ── panel-wide ─────────────────────────────────────────────────────────── */
@@ -259,7 +274,7 @@ h1 {
 /* ── Racing Profile ──────────────────────────────────────────────────────── */
 .pb-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  grid-template-columns: repeat(6, 1fr);
   gap: 0.8rem;
 }
 
@@ -306,7 +321,7 @@ h1 {
 /* ── Training Week ───────────────────────────────────────────────────────── */
 .week-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  grid-template-columns: repeat(7, 1fr);
   gap: 0.7rem;
 }
 
@@ -421,3 +436,262 @@ h1 {
   background: none;
   border: 1px solid var(--line);
 }
+
+/* ── AI Coach Chat ────────────────────────────────────────────────────────── */
+.badge-model {
+  font-size: 0.65rem;
+  font-family: var(--mono, monospace);
+  background: rgba(31,143,104,0.12);
+  color: var(--accent);
+  border: 1px solid rgba(31,143,104,0.3);
+  padding: 2px 7px;
+  border-radius: 99px;
+  vertical-align: middle;
+  margin-left: 0.5rem;
+}
+
+.chat-messages {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  min-height: 120px;
+  max-height: 360px;
+  overflow-y: auto;
+  padding: 0.75rem 0;
+  margin-bottom: 1rem;
+}
+
+.chat-bubble {
+  max-width: 80%;
+  padding: 0.6rem 0.9rem;
+  border-radius: 14px;
+  line-height: 1.5;
+  font-size: 0.9rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.chat-user {
+  align-self: flex-end;
+  background: var(--ink);
+  color: #fff;
+  border-bottom-right-radius: 4px;
+}
+
+.chat-assistant {
+  align-self: flex-start;
+  background: var(--bg-1);
+  color: var(--ink);
+  border-bottom-left-radius: 4px;
+}
+
+.chat-thinking {
+  opacity: 0.5;
+  animation: pulse 1s ease-in-out infinite alternate;
+}
+
+@keyframes pulse {
+  from { opacity: 0.35; }
+  to   { opacity: 0.7; }
+}
+
+.chat-form {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.chat-form input {
+  flex: 1;
+  padding: 0.55rem 0.9rem;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: var(--bg-0);
+  font: inherit;
+  font-size: 0.9rem;
+  color: var(--ink);
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.chat-form input:focus {
+  border-color: var(--accent);
+}
+
+.chat-form button {
+  padding: 0.55rem 1.1rem;
+  border-radius: 8px;
+  border: none;
+  background: var(--accent);
+  color: #fff;
+  font: inherit;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.chat-form button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.goal-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 0.9rem;
+}
+
+.goal-name  { font-weight: 600; }
+.goal-sep   { color: var(--ink-soft); }
+.goal-target { font-family: var(--mono, monospace); color: var(--accent); }
+.goal-deadline { color: var(--ink-soft); }
+.empty-goals { color: var(--ink-soft); font-style: italic; }
+
+/* ── Last Activity ─────────────────────────────────────────────────────────── */
+.activity-header {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.8rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.activity-icon {
+  font-size: 1.8rem;
+  line-height: 1;
+}
+
+.activity-name {
+  margin: 0;
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.activity-meta {
+  margin: 0.15rem 0 0;
+  font-size: 0.75rem;
+  color: var(--ink-soft);
+  font-family: "IBM Plex Mono", monospace;
+}
+
+.activity-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  gap: 0.6rem;
+  margin-bottom: 1rem;
+}
+
+.astat {
+  background: rgba(255,255,255,0.4);
+  border: 1px dashed var(--line);
+  border-radius: 10px;
+  padding: 0.5rem 0.6rem;
+}
+
+.astat-v {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  font-family: "IBM Plex Mono", monospace;
+}
+
+.astat-l {
+  margin: 0.1rem 0 0;
+  font-size: 0.7rem;
+  color: var(--ink-soft);
+}
+
+.activity-load {
+  margin-bottom: 1rem;
+}
+
+.load-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.25rem;
+}
+
+.load-label {
+  font-size: 0.75rem;
+  color: var(--ink-soft);
+  margin: 0;
+}
+
+.load-val {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.load-bar-wrap {
+  height: 6px;
+  background: rgba(31,42,45,0.08);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.load-bar-fill {
+  height: 100%;
+  border-radius: 99px;
+  transition: width 0.6s ease;
+}
+
+/* HR Zones */
+.hr-zones { margin-top: 0.8rem; }
+
+.zone-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.4rem;
+  height: 60px;
+}
+
+.zone-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  justify-content: flex-end;
+}
+
+.zone-fill {
+  width: 100%;
+  background: var(--accent);
+  border-radius: 4px 4px 0 0;
+  min-height: 2px;
+}
+
+.zone-pct {
+  font-size: 0.6rem;
+  font-family: "IBM Plex Mono", monospace;
+  color: var(--ink-soft);
+  margin-top: 0.2rem;
+}
+
+.zone-lbl {
+  font-size: 0.6rem;
+  color: var(--ink-soft);
+  font-weight: 600;
+}
+
+/* ── Recovery badge ────────────────────────────────────────────────────────── */
+.recovery-badge {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.78rem;
+  padding: 0.28rem 0.7rem;
+  border-radius: 999px;
+  font-weight: 600;
+  transition: background 0.3s;
+}
+
+.recovery-badge.hidden { display: none; }
+
+.recovery-excellent { background: rgba(31,143,104,0.15); border-color: rgba(31,143,104,0.5); color: #1f8f68; }
+.recovery-good      { background: rgba(31,143,104,0.08); border-color: rgba(31,143,104,0.3); color: #3da076; }
+.recovery-fair      { background: rgba(239,175,87,0.15); border-color: rgba(239,175,87,0.4); color: #b07820; }
+.recovery-poor      { background: rgba(239,125,87,0.15); border-color: rgba(239,125,87,0.4); color: #c05030; }

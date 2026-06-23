@@ -39,8 +39,35 @@ export async function getPersonalRecords() {
   return r.json();
 }
 
-export async function getTrainingWeek(goal = 'half_marathon') {
-  const r = await fetch(`${BRIDGE}/api/training-week?goal=${goal}`);
+export async function getTrainingWeek(goal) {
+  const url = goal ? `${BRIDGE}/api/training-week?goal=${goal}` : `${BRIDGE}/api/training-week`;
+  const r = await fetch(url);
+  if (!r.ok) throw new Error('Bridge error');
+  return r.json();
+}
+
+export async function sendChatMessage(message, history = []) {
+  const r = await fetch(`${BRIDGE}/api/chat`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message, history })
+  });
+  if (!r.ok) throw new Error('Chat error');
+  return r.json();
+}
+
+export async function getGoals() {
+  const r = await fetch(`${BRIDGE}/api/goals`);
+  if (!r.ok) throw new Error('Bridge error');
+  return r.json();
+}
+
+export async function saveGoal(goal) {
+  const r = await fetch(`${BRIDGE}/api/goals`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(goal)
+  });
   if (!r.ok) throw new Error('Bridge error');
   return r.json();
 }
